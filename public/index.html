@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Juegos en Twitch</title>
+    <link rel="stylesheet" href="twitch.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">🎮 Juegos Populares en Twitch</h1>
+            <p class="subtitle">Top de juegos más vistos en tiempo real</p>
+        </header>
+        <nav>
+            <a href="/home.html">Inicio</a>
+            <a href="#streams">Directos</a>
+            <a href="#categories">Categorías</a>
+            <a href="http://localhost:3000">Juegos Populares</a>
+        </nav>
+        <div class="loader"></div>
+        
+        <div class="games-grid" id="gamesContainer"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/top-games';
+        const gamesContainer = document.getElementById('gamesContainer');
+        const loader = document.querySelector('.loader');
+
+        async function fetchGames() {
+            try {
+                loader.style.display = 'block';
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                
+                if(data.data && data.data.length > 0) {
+                    displayGames(data.data);
+                } else {
+                    gamesContainer.innerHTML = '<p>No se encontraron juegos</p>';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                gamesContainer.innerHTML = '<p>Error al cargar los juegos</p>';
+            } finally {
+                loader.style.display = 'none';
+            }
+        }
+
+        function displayGames(games) {
+            gamesContainer.innerHTML = games.map(game => `
+                <div class="game-card">
+                    <img src="${game.box_art_url}" alt="${game.name}" class="game-image">
+                    <div class="game-info">
+                        <h2 class="game-title">${game.name}</h2>
+                        <p class="game-id">ID: ${game.id}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Cargar juegos al iniciar
+        fetchGames();
+    </script>
+</body>
+</html>
